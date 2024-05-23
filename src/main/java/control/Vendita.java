@@ -59,23 +59,34 @@ public class Vendita extends HttpServlet {
 		                    product.setImmagine(name);
 		                }
 		                else {
-		                	if (item.getFieldName().compareTo("nome") == 0) {
-		                		product.setNome(item.getString());
-		                	}
-		                	else if (item.getFieldName().compareTo("prezzo") == 0) {
-		                		product.setPrezzo(Double.parseDouble(item.getString()));
-		                	}
-		                	else if (item.getFieldName().compareTo("spedizione") == 0) {
-		                		product.setSpedizione(Double.parseDouble(item.getString()));
-		                	}
-		                	else if (item.getFieldName().compareTo("tipologia") == 0) {
-		                		product.setTipologia(item.getString());
-		                	}
-							else if (item.getFieldName().compareTo("tag") == 0) {
-								product.setTag(item.getString());
-							}
-							else if (item.getFieldName().compareTo("descrizione") == 0) {
-		                		product.setDescrizione(item.getString());
+		                	
+		                	String fieldName = item.getFieldName();
+		                	String fieldValue = item.getString();
+		                	
+		                	//Check
+		                	fieldValue = sanitizeInput(fieldValue);
+		                	
+		                	switch (fieldName) {
+		                		case "nome":
+		                			product.setNome(fieldValue);
+		                			break;
+		                		case "prezzo":
+		                			product.setPrezzo(Double.parseDouble(fieldValue));
+		                			break;
+		                		case "spedizione":
+		                			product.setSpedizione(Double.parseDouble(fieldValue));
+		                			break;
+		                		case "tipologia":
+		                			product.setTipologia(fieldValue);
+		                			break;
+		                		case "tag":
+		                			product.setTag(fieldValue);
+		                			break;
+		                		case "descrizione":
+		                			product.setDescrizione(fieldValue);
+		                			break;
+		                		default:
+		                			;
 		                	}
 		                }
 		            }
@@ -89,8 +100,7 @@ public class Vendita extends HttpServlet {
 
 		    }
 		    else{
-		        request.setAttribute("message",
-		                             "Sorry this Servlet only handles file upload request");
+		        request.setAttribute("message", "Sorry this Servlet only handles file upload request");
 		       
 		    }
 		    ProductModel model = new ProductModel();
@@ -113,4 +123,13 @@ public class Vendita extends HttpServlet {
 		doGet(request, response);
 	}
 
+	
+	// Funzione per sanificare l'input utente
+	private String sanitizeInput(String input) {
+        // Sostituisci i caratteri speciali con stringhe vuote
+        return input.replaceAll("[^a-zA-Z0-9 ]", "")
+        		.replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;");
+    }
 }
